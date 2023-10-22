@@ -10,7 +10,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 await initRouter(app);
 await connectDB();
-
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
     console.log(`API server started on port ${port}`);

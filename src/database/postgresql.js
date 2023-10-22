@@ -19,5 +19,9 @@ export async function connectDB() {
 
 }
 
+export async function testDB() {
+  const result = await database.query('SELECT * FROM public.user');
+  console.log("result: ", result.rows)
+}
 
 
