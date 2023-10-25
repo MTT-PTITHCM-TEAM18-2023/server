@@ -76,6 +76,68 @@ async function getMapCustomer() {
     }
 }
 
+async function getMapProduct() {
+    try {
+        const all = await database.query(
+            'SELECT * FROM product'
+        )
+        if (all.rowCount == 0) {
+            return null
+        }
+        const m = new Map();
+        for (const row of all.rows){
+            m.set(row.id, {name: row.name, price: row.price});
+        }
+        return m
+    } catch (error) {
+        return null
+    }
+}
+
+
+export async function getOrderDetail(id){
+    try {
+        const mType = await getMapOrderType()
+        const mStatus = await getMapOrderStatus()
+        const mUser = await getMapUser()
+        const mCustomer = await getMapCustomer()
+        const mProduct = await getMapProduct()
+        const order = await database.query(
+            'SELECT * FROM public.order where id = $1',
+            [id]
+        )
+        if(order.rowCount == 0) {
+            throw Error("Not found order")
+        }
+        const items = await database.query(
+            'SELECT * FROM public.order_item where order_id = $1',
+            [order.rows[0].id]
+        )
+        const res = []
+        for(let item of items.rows) {
+            res.push({
+                name: mProduct.get(item.product_id).name,
+                price: mProduct.get(item.product_id).price,
+                qty: item.qty,
+            })
+        }
+        return {
+            id: order.rows[0].id,
+            order_date: order.rows[0].order_date,
+            update_date: order.rows[0].update_time,
+            order_type: mType.get(order.rows[0].order_type_id),
+            total: order.rows[0].total,
+            order_status: mStatus.get(order.rows[0].order_status_id),
+            customer: mCustomer.get(order.rows[0].customer_id),
+            user: mUser.get(order.rows[0].user_id),
+            items: res
+      } 
+    } catch (error) {
+        throw error
+    }
+}
+
+
 export async function getPendingOrder(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
@@ -98,7 +160,6 @@ export async function getPendingOrder(_page, _limit){
         if(result.rowCount == 0) {
             throw Error("Not found order")
         }
-        console.log("user_all: ", mUser)
         const res = []
         for(let item of result.rows) {
         

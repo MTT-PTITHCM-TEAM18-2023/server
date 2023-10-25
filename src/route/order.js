@@ -1,7 +1,10 @@
-import { changeOrderStatusHandler, getOrderByStatusHandler, getOrderStatusHandler, getPendingOrderHandler } from "../handler/order.js";
+import { changeOrderStatusHandler, getOrderByStatusHandler, getOrderStatusHandler, getPendingOrderHandler, getOrderDetailHandler } from "../handler/order.js";
 import { verifyToken } from "../middlewares/verifytoken.js";
 
 export async function orderRouter(app){
+    app.get("/order/detail/:id", verifyToken, (req, res) => {
+        getOrderDetailHandler(req, res);
+    });
     app.get("/order/pending", verifyToken, (req, res) => {
         getPendingOrderHandler(req, res);
     });
@@ -14,4 +17,5 @@ export async function orderRouter(app){
     app.get("/order/by-status/:id", verifyToken, (req, res) => {
         getOrderByStatusHandler(req, res);
     });
+
 }

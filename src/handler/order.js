@@ -1,6 +1,32 @@
 import {Status, StatusCode} from "../common/common.js";
-import { changeOrderStatus, getOrderByStatus, getOrderStatus, getPendingOrder } from "../business/order/order.js";
+import { changeOrderStatus, getOrderByStatus, getOrderStatus, getPendingOrder, getOrderDetail } from "../business/order/order.js";
 
+
+
+export async function getOrderDetailHandler(req, res) {
+    try {
+        const {id} = req.params
+        const items = await getOrderDetail(id);
+        if (items == null) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                status: Status.FAILED,
+                message: "Failed to order detail",
+            });
+            return
+        }
+        res.status(StatusCode.OK).json({
+            status: Status.OK,
+            message: "Get order detail successfully!",
+            data: items
+        }); 
+    } catch (error) {
+        res.status(StatusCode.INTERNAL_SERVER).json({
+            status: Status.ERROR,
+            message: error.message,
+        });
+    }
+
+}
 
 export async function getPendingOrderHandler(req, res) {
     try {
