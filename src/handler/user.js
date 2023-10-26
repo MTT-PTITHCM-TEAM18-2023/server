@@ -3,27 +3,28 @@ import { decodeJwt, generateToken, getJwt, revokeToken } from "../middlewares/ve
 import UserBusiness from "../business/user/user.js";
 import {sendEmail} from "../common/email.js";
 import { generateRandomString } from "../common/strings.js";
+import { MSG } from "../common/message.js";
 
 const logout = async (req, res) => {
     const token = getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: MSG.NOT_VERIFIED,
         });
         return
     }
     const rv = await revokeToken(token)
     if(rv == null) {
-        res.send({
-            status: Status.OK,
-            message: "Failed to logout session!"
+        console.log("INTERNAL_SERVER_ERROR: ", "Failed to logout session!")
+        res.status(StatusCode.INTERNAL_SERVER).json({
+            status: Status.INTERNAL_SERVER_ERROR,
         });
         return
     }
     res.send({
         status: Status.OK,
-        message: "Logout successfully!",
+        message: MSG.LOG_OUT_SUCCESS,
     });
 }
 
@@ -32,7 +33,7 @@ const login = async (req, res) => {
     if (req.body.email === "" || req.body.password === "") {
         res.send({
             status: Status.INVALID,
-            message: "Invalid email or password!",
+            message: MSG.INVALID_EMAIL_OR_PASS,
         });
         return
     }
@@ -41,14 +42,14 @@ const login = async (req, res) => {
     if (item == null) {
         res.status(StatusCode.UN_AUTHENTICATION).json({
             status: Status.FAILED,
-            message: "Login failed!",
+            message: MSG.LOG_IN_FAILED,
         });
         return
     }
     const token = await generateToken({ email: req.body.email.toLowerCase(), roleId: item.roleId , id: item.id})
     res.status(StatusCode.OK).json({
         status: Status.OK,
-        message: "Login successfully!",
+        message: MSG.LOG_IN_SUCCESS,
         data: {
             jwt: token,
             roleId: item.roleId,
@@ -61,7 +62,7 @@ const getProfile = async (req, res) => {
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: MSG.NOT_VERIFIED,
         });
         return
     }
@@ -69,7 +70,7 @@ const getProfile = async (req, res) => {
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: MSG.NOT_VERIFIED,
         });
         return
     }
@@ -77,14 +78,14 @@ const getProfile = async (req, res) => {
     if (item == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Failed to get profile",
+            message: MSG.GET_PROFILE_FAILED,
         });
         return
     }
 
     res.status(StatusCode.OK).json({
         status: Status.OK,
-        message: "Get profile successfully!",
+        message: MSG.GET_PROFILE_SUCCESS,
         data: {
             email: item.email,
             roleId: item.role_id,
@@ -100,7 +101,7 @@ const changePassword = async (req, res) => {
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: NOT_VERIFIED,
         });
         return
     }
@@ -108,7 +109,7 @@ const changePassword = async (req, res) => {
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: NOT_VERIFIED,
         });
         return
     }
@@ -117,13 +118,13 @@ const changePassword = async (req, res) => {
     if (item == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Failed to change password!",
+            message: MSG.CHANGE_PASS_FAILED
         });
         return
     }
     res.status(StatusCode.OK).json({
         status: Status.OK,
-        message: "Change password successfully!",
+        message: MSG.CHANGE_PASS_SUCCESS,
     });
     return
 }
@@ -133,7 +134,7 @@ const sendPassword = async (req, res) => {
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: MSG.NOT_VERIFIED,
         });
         return
     }
@@ -141,7 +142,7 @@ const sendPassword = async (req, res) => {
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Not verified!",
+            message: MSG.NOT_VERIFIED,
         });
         return
     }
@@ -151,7 +152,7 @@ const sendPassword = async (req, res) => {
     if (item == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Failed to change password!",
+            message: MSG.CHANGE_PASS_FAILED,
         });
         return
     }
@@ -159,7 +160,7 @@ const sendPassword = async (req, res) => {
     if(rv == null) {
         res.send({
             status: Status.ERROR,
-            message: "Failed to logout session!",
+            message: MSG.LOG_OUT_SESSION_FAILED,
         });
         return
     }
@@ -167,7 +168,7 @@ const sendPassword = async (req, res) => {
     await sendEmail(email, "Mật khẩu mới", content)
     res.status(StatusCode.CREATED).json({
         status: Status.CREATED,
-        message: "New password has been sent to your email!"
+        message: MSG.SEND_PASS_EMAIL
     })
     return
 }
@@ -179,13 +180,13 @@ const get = async (req, res) => {
     if (items) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get users successfully!",
+            message: MSG.GET_PROFILE_SUCCESS,
             data: items
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Get users failed!"
+            message: MSG.GET_PROFILE_FAILED
         })
     }
 }
@@ -198,13 +199,13 @@ const getById = async (req, res) => {
     if (user) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get users successfully!",
+            message: MSG.GET_PROFILE_SUCCESS,
             data: user
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Get user failed!"
+            message: MSG.GET_PROFILE_FAILED
         })
     }
 }
@@ -218,12 +219,12 @@ const create = async (req, res) => {
 
         res.status(StatusCode.CREATED).json({
             status: Status.CREATED,
-            message: "An user has been created!"
+            message: MSG.CREATE_USER_SUCCESS
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Create user failed!"
+            message: MSG.CREATE_USER_FAILED
         })
     }
 }
@@ -236,13 +237,13 @@ const update = async (req, res) => {
     if (updated) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Update user successfully!",
+            message: MSG.UPDATE_USER_SUCCESS,
             data
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Update user failed!"
+            message: MSG.UPDATE_USER_FAILED
         })
     }
 }
@@ -254,12 +255,12 @@ const deleteById = async (req, res) => {
     if (deleted) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Delete user successfully!"
+            message: MSG.DELETE_USER_SUCCESS
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
-            message: "Delete user failed!"
+            message: MSG.DELETE_USER_FAILED
         })
     }
 }

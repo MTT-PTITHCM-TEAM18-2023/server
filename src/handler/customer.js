@@ -1,6 +1,7 @@
 import {Status, StatusCode} from "../common/common.js";
 import { createCustomer, getCustomer, getCustomerById, updateCustomer } from "../business/customer/customer.js"
 import { getLoyalCustomer } from "../business/customer/customer.js";
+import { MSG } from "../common/message.js";
 
 export async function getCustomerHandler(req, res) {
     try {
@@ -106,7 +107,7 @@ export async function updateCustomerHandler(req, res) {
     if (req.body.id == "" || req.body.name == "" || req.body.phone == "" || req.body.email == ""|| req.body.address == ""){
         res.status(StatusCode.INTERNAL_SERVER).json({
             status: Status.ERROR,
-            message: "Invalid customer infomation!",
+            message: MSG.CUSTOMER_INFO_INVALID,
         });
     } 
     try {
@@ -114,19 +115,19 @@ export async function updateCustomerHandler(req, res) {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to update customer",
+                message: MSG.UPDATE_CUSTOMER_FAILED,
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Update customer successfully!",
+            message: MSG.UPDATE_CUSTOMER_SUCCESS,
             data: items
         });
     } catch (error) {
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
         res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.ERROR,
-            message: error.message,
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
 }

@@ -1,5 +1,6 @@
 import {Status, StatusCode} from "../common/common.js";
 import { createCategory, getCategory, getCategoryById, updateCategory } from "../business/category/category.js"
+import { MSG } from "../common/message.js";
 
 export async function getCategoryHandler(req, res) {
     try {
@@ -8,19 +9,19 @@ export async function getCategoryHandler(req, res) {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to get category",
+                message: MSG.GET_CAT_FAILED,
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get category successfully!",
+            message: MSG.GET_CAT_SUCCESS,
             data: items
         }); 
     } catch (error) {
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
         res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.ERROR,
-            message: error.message,
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
     
@@ -33,19 +34,19 @@ export async function getCategoryByIdHandler(req, res) {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to get category",
+                message: MSG.GET_CAT_FAILED,
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get category successfully!",
+            message: MSG.GET_CAT_SUCCESS,
             data: items
         }); 
     } catch (error) {
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
         res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.ERROR,
-            message: error.message,
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
     
@@ -57,19 +58,19 @@ export async function createCategoryHandler(req, res) {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to create category",
+                message: MSG.CREATE_CAT_FAILED,
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Create catgory successfully!",
+            message: MSG.CREATE_CAT_SUCCESS,
             data: items
         });
     } catch (error) {
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
         res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.ERROR,
-            message: error.message,
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
     
@@ -82,19 +83,19 @@ export async function updateCategoryHandler(req, res) {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to update category",
+                message: MSG.UPDATE_CAT_FAILED,
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Update catgory successfully!",
+            message: MSG.UPDATE_CAT_SUCCESS,
             data: items
         });
     } catch (error) {
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
         res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.ERROR,
-            message: error.message,
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
 

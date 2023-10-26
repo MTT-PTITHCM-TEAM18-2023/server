@@ -1,6 +1,7 @@
 import {Status, StatusCode} from "../common/common.js";
 
 import ProductBusiness from "../business/product/product.js";
+import { MSG } from "../common/message.js";
 
 
 const get = async (req, res) => {
@@ -10,14 +11,14 @@ const get = async (req, res) => {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to get product by category",
+                message: MSG.GET_PRODUCT_BY_CAT_FAILED,
             });
             return
         }
 
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get product by category successfully!",
+            message: MSG.GET_PRODUCT_BY_CAT_SUCCESS,
             data: items
         });
     } else {
@@ -25,14 +26,14 @@ const get = async (req, res) => {
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to get product",
+                message: MSG.GET_PRODUCT_FAILED,
             });
             return
         }
     
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get product successfully!",
+            message: MSG.GET_PRODUCT_SUCCESS, 
             data: items
         }); 
     }
@@ -45,14 +46,14 @@ const getById = async (req, res) => {
     if (product) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: `Get product ${id} successfully!`,
+            message: MSG.GET_PRODUCT_BY_ID_SUCCESS,
             data: product
         })
     }
     else {
         res.status(StatusCode.NOT_FOUND).json({
             status: Status.NOT_FOUND,
-            message: `Product ${id} not found!`
+            message: MSG.GET_PRODUCT_BY_ID_FAILED
         })
     }
 }
@@ -62,7 +63,7 @@ const create = async (req, res) => {
     if (req.body.name == "" || !isNumber(req.body.price) || req.body.imageUrl == "" || !isNumber(req.body.categoryId) ||  !isNumber(req.body.supplierId) || req.body.unit == "" || !isNumber(req.body.qty)){
         res.status(StatusCode.INTERNAL_SERVER).json({
             status: Status.ERROR,
-            message: "Invalid product infomation!",
+            message: MSG.PRODUCT_INFO_INVALID,
         });
     } 
 
@@ -70,13 +71,13 @@ const create = async (req, res) => {
     if (created) {
         res.status(StatusCode.CREATED).json({
             status: Status.CREATED,
-            message: "Create a new product successfully!",
+            message: MSG.CREATE_PRODUCT_SUCCESS,
             data: req.body
         })
     } else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.BAD_REQUEST,
-            message: "Can not create the product!"
+            message: MSG.CREATE_CAT_FAILED
         })
     }
 }
@@ -89,13 +90,13 @@ const update = async (req, res) => {
     if (updated) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: `Update the product ${id} successfully!`
+            message: MSG.UPDATE_PRODUCT_SUCCESS
         })
     }
     else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.BAD_REQUEST,
-            message: `Can not update product ${id}`
+            message: MSG.UPDATE_PRODUCT_FAILED
         })
     }
 }
@@ -107,13 +108,13 @@ const deleteById = async (req, res) => {
     if (deleted) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: `Delete the product ${id} successfully!`
+            message: MSG.DELETE_PRODUCT_SUCCESS
         })
     }
     else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.BAD_REQUEST,
-            message: `Can not delete product ${id}!`
+            message: MSG.DELETE_PRODUCT_FAILED
         })
     }
 }
@@ -132,14 +133,14 @@ const findByName = async (req, res) => {
     if (product) {
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: `Get product ${id} successfully!`,
+            message: MSG.FIND_BY_NAME_PRODUCT_SUCCESS,
             data: product
         })
     }
     else {
         res.status(StatusCode.NOT_FOUND).json({
             status: Status.NOT_FOUND,
-            message: `Product ${id} not found!`
+            message: MSG.FIND_BY_NAME_PRODUCT_FAILED
         })
     }
 }

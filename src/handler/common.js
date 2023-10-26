@@ -2,13 +2,14 @@ import { sendOTP, verifyOTP } from "../business/otp/otp.js";
 import { isValidEmail } from "../common/validate.js";
 import {  Status } from "../common/common.js";
 import { generateToken } from "../middlewares/verifytoken.js";
+import { MSG } from "../common/message.js";
 
 
 export async function sendOTPHandler(req, res){
     if(!isValidEmail(req.body.email)) {
         res.send({
             status: Status.INVALID,
-            message: "Invalid email!",
+            message: MSG.INVALID_EMAIL,
         });
         return
     }
@@ -16,13 +17,13 @@ export async function sendOTPHandler(req, res){
     if (item == null) {
         res.send({
             status: Status.FAILED,
-            message: "Failed to send code!",
+            message: MSG.SEND_OTP_FAILED,
         });
         return
     }
     res.send({
         status: Status.OK,
-        message: "Send code successfully!",
+        message: MSG.SEND_OTP_SUCCESS,
         data: item
     });
 }
@@ -31,14 +32,14 @@ export async function verifyOTPHandler(req, res){
     if(!isValidEmail(req.body.email)) {
         res.send({
             status: Status.INVALID,
-            message: "Invalid email!",
+            message: MSG.INVALID_EMAIL,
         });
         return
     }
     if(req.body.code == "") {
         res.send({
             status: Status.INVALID,
-            message: "Empty code!",
+            message: MSG.EMPTY_OTP,
         });
         return
     }
@@ -47,22 +48,22 @@ export async function verifyOTPHandler(req, res){
         if (item == null) {
             res.send({
                 status: Status.FAILED,
-                message: "Failed to verify code!",
+                message: MSG.VERIFY_OTP_FAILED,
             });
             return
         }
         const token = await generateToken({ email: req.body.email.toLowerCase()})
         res.send({
             status: Status.OK,
-            message: "Verify code successfully!",
+            message: MSG.VERIFY_OTP_SUCCESS,
             data: {
                 jwt: token
             }
         });
     } catch (error) {
-        res.send({
-            status: Status.ERROR,
-            message: error.message,
+        console.log("INTERNAL_SERVER_ERROR: ", error.message)
+        res.status(StatusCode.INTERNAL_SERVER).json({
+            status: Status.INTERNAL_SERVER_ERROR,
         });
     }
 }
