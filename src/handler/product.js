@@ -58,6 +58,14 @@ const getById = async (req, res) => {
 }
 
 const create = async (req, res) => {
+
+    if (req.body.name == "" || !isNumber(req.body.price) || req.body.imageUrl == "" || !isNumber(req.body.categoryId) ||  !isNumber(req.body.supplierId) || req.body.unit == "" || !isNumber(req.body.qty)){
+        res.status(StatusCode.INTERNAL_SERVER).json({
+            status: Status.ERROR,
+            message: "Invalid product infomation!",
+        });
+    } 
+
     const created = await ProductBusiness.create(req.body)
     if (created) {
         res.status(StatusCode.CREATED).json({
