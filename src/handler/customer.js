@@ -103,6 +103,12 @@ export async function createCustomerHandler(req, res) {
 
 export async function updateCustomerHandler(req, res) {
 
+    if (req.body.id == "" || req.body.name == "" || req.body.phone == "" || req.body.email == ""|| req.body.address == ""){
+        res.status(StatusCode.INTERNAL_SERVER).json({
+            status: Status.ERROR,
+            message: "Invalid customer infomation!",
+        });
+    } 
     try {
         const items = await updateCustomer(req.body)
         if (items == null) {

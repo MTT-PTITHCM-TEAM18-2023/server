@@ -87,7 +87,7 @@ const update = async (req, res) => {
     else {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.BAD_REQUEST,
-            message: `Can not update product ${id}!`
+            message: `Can not update product ${id}`
         })
     }
 }
