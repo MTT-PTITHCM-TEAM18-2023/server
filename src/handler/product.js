@@ -5,7 +5,7 @@ import { MSG } from "../common/message.js";
 
 
 const get = async (req, res) => {
-    const {page, limit, cat} = req.query
+    const {page, limit, cat, text} = req.query
     if (cat && !isNaN(cat)) {
         const items = await ProductBusiness.getByCat(cat, page, limit)
         if (items == null) {
@@ -22,20 +22,38 @@ const get = async (req, res) => {
             data: items
         });
     } else {
-        const items = await ProductBusiness.get(page, limit)
-        if (items == null) {
-            res.status(StatusCode.BAD_REQUEST).json({
-                status: Status.FAILED,
-                message: MSG.GET_PRODUCT_FAILED,
+        if(text == "") {
+            const items = await ProductBusiness.get(page, limit)
+            if (items == null) {
+                res.status(StatusCode.BAD_REQUEST).json({
+                    status: Status.FAILED,
+                    message: MSG.GET_PRODUCT_FAILED,
+                });
+                return
+            }
+        
+            res.status(StatusCode.OK).json({
+                status: Status.OK,
+                message: MSG.GET_PRODUCT_SUCCESS, 
+                data: items
             });
-            return
+        } else {
+            const items = await ProductBusiness.findByText(page, limit, text)
+            if (items == null) {
+                res.status(StatusCode.BAD_REQUEST).json({
+                    status: Status.FAILED,
+                    message: MSG.GET_PRODUCT_FAILED,
+                });
+                return
+            }
+        
+            res.status(StatusCode.OK).json({
+                status: Status.OK,
+                message: MSG.GET_PRODUCT_SUCCESS, 
+                data: items
+            });
         }
-    
-        res.status(StatusCode.OK).json({
-            status: Status.OK,
-            message: MSG.GET_PRODUCT_SUCCESS, 
-            data: items
-        }); 
+         
     }
 }
 

@@ -34,6 +34,41 @@ const get = async (_page, _limit) => {
     }
 }
 
+
+const findByText = async (_page, _limit, text) => {
+    const page = parseInt(_page) || 1;
+    const limit = parseInt(_limit) || 10;
+  
+    const offset = (page - 1) * limit;
+  
+    try {
+        const all = await database.query(
+            'SELECT * FROM product where is_active = true AND (name LIKE $1 OR description LIKE $1)',
+            ['%' + text + '%']
+        )
+        const result = await database.query(
+            'SELECT * FROM product where is_active = true AND (name LIKE $3 OR description LIKE $3) ORDER BY id OFFSET $1 LIMIT $2',
+            [offset, limit, '%' + text + '%']
+        );
+
+        return {
+            items: result.rows.map(item => new ProductDTO(item)),
+            meta: {
+                "itemCount": result.rowCount,
+                "totalItems": all.rowCount,
+                "itemsPerPage": limit,
+                "totalPages": parseInt(all.rowCount/limit) + 1,
+                "currentPage": page
+            },
+
+      } 
+      
+    } catch (error) {
+        console.error('Error executing query:', error);
+        return null
+    }
+}
+
 const getById = async (id) => {
     try {
         const {rows} = await database.query(
@@ -140,7 +175,8 @@ const ProductBusiness = {
     update,
     deleteById,
     getByCat,
-    findByName
+    findByName,
+    findByText
 }
 
 export default ProductBusiness
