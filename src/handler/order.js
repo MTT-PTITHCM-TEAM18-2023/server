@@ -123,8 +123,8 @@ export async function changeOrderStatusHandler(req, res) {
         }); 
     } catch (error) {
         console.log("INTERNAL_SERVER_ERROR: ", error.message)
-        res.status(StatusCode.INTERNAL_SERVER).json({
-            status: Status.INTERNAL_SERVER_ERROR,
+        res.status(StatusCode.BAD_REQUEST).json({
+            status: Status.CHANGE_ORDER_STATUS_FAILED,
         });
     }
 

@@ -245,10 +245,45 @@ export async function getOrderByStatus(id, _page, _limit){
 
 export async function changeOrderStatus(id, status_id){
     try {
+        const mStatus = await getMapOrderStatus()
+        const result = await database.query(
+            'SELECT * FROM public.order where id = $1',
+            [id]
+        );
+
+        if(result.rows[0].order_status_id == 4 || result.rows[0].order_status_id == 5) {
+            const status = mStatus.get(result.rows[0].order_status_id)
+            const msg = "Trạng thái đơn hàng hiện tại là: " + status + ". Không thể thay đổi trạng thái đơn hàng!"
+            throw Error(msg)
+        }
+        if(result.rows[0].order_status_id == 3 && status_id == 5) {
+            throw Error("Đơn hàng đang vận chuyển, không thể huỷ!")
+        }
+        if (result.rows[0].order_status_id > status_id) {
+            const curStatus = mStatus.get(result.rows[0].order_status_id)
+            const changeStatus = mStatus.get(status_id)
+            const msg = "Trạng thái đơn hàng hiện tại là: " + curStatus + ". Không thể thay đổi thành trạng thái: " + changeStatus + "."
+            throw Error(msg)
+        }
+        if(result.rowCount == 0) {
+            throw Error("Not found order")
+        }
+        if(result.rows[0].order_status_id == 1 && (status_id != 5 && status_id != 2)) {
+            const curStatus = mStatus.get(result.rows[0].order_status_id)
+            const changeStatus = mStatus.get(status_id)
+            const msg = "Trạng thái đơn hàng hiện tại là: " + curStatus + ". Không thể thay đổi thành trạng thái: " + changeStatus + "."
+            throw Error(msg)
+        }
+        if(result.rows[0].order_status_id == 2 && (status_id != 5 && status_id != 3)) {
+            const curStatus = mStatus.get(result.rows[0].order_status_id)
+            const changeStatus = mStatus.get(status_id)
+            const msg = "Trạng thái đơn hàng hiện tại là: " + curStatus + ". Không thể thay đổi thành trạng thái: " + changeStatus + "."
+            throw Error(msg)
+        }
         let updateQuery = `
                 UPDATE public.order
                 SET order_status_id = $2,
-                    update_date = current_date
+                    update_time = current_date
                 WHERE id = $1
                 RETURNING *;
             `;
