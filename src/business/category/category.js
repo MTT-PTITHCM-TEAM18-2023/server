@@ -53,11 +53,11 @@ export async function createCategory(category){
     try {
         const result = await database.query(
             `
-                INSERT INTO category (name, description) 
-                VALUES ($1, $2) 
+                INSERT INTO category (name) 
+                VALUES ($1) 
                 RETURNING *;
             `,
-            [category.name, category.description]
+            [category.name]
         );
         if (result.rowCount == 0) {
             throw new Error("Not found category");
@@ -74,12 +74,11 @@ export async function updateCategory(category){
         const result = await database.query(
             `
                 UPDATE category SET 
-                    name = $2, 
-                    description = $3 
+                    name = $2 
                 WHERE id = $1
                 RETURNING *;
             `,
-            [category.id, category.name, category.description]
+            [category.id, category.name]
         );
         if (result.rowCount == 0) {
             throw new Error("Not found category: id " + category.id);
