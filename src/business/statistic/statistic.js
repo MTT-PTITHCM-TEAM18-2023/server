@@ -85,7 +85,8 @@ export async function getTopProduct(_top){
             JOIN
                 public."order" o ON oi.order_id = o.id
             WHERE
-                o.order_date = CURRENT_DATE
+                (o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+                AND o.order_date <= CURRENT_DATE)
             GROUP BY
                 p.id, p.name
             ORDER BY
