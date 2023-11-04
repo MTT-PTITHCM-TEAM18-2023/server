@@ -60,7 +60,7 @@ export async function getTopProduct(_top){
             [top]
         )
         if(all.rowCount == 0) {
-            throw Error("Not found order")
+            throw Error("Not found product")
         }
         return all.rows
     } catch (error) {

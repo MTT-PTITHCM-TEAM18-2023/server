@@ -22,7 +22,7 @@ const get = async (req, res) => {
             data: items
         });
     } else {
-        if(text == "") {
+        if(text == undefined || text == "" || text == null) {
             const items = await ProductBusiness.get(page, limit)
             if (items == null) {
                 res.status(StatusCode.BAD_REQUEST).json({

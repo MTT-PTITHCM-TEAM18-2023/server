@@ -1,5 +1,4 @@
 import {Status, StatusCode} from "../common/common.js";
-import { changeOrderStatus, getOrderByStatus, getOrderStatus, getPendingOrder } from "../business/order/order.js";
 import { getGeneralStatistic, getTopProduct } from "../business/statistic/statistic.js";
 
 
@@ -52,22 +51,20 @@ export async function getTopProductHandler(req, res) {
 
 }
 
-
-export async function getOrderByStatusHandler(req, res) {
+export async function getOutOfStockHandler(req, res) {
     try {
-        const {id} = req.params
         const {page, limit} = req.query
-        const items = await getOrderByStatus(id, page, limit);
+        const items = await getOutOfStock(page, limit);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to get order by status",
+                message: "Failed to out of stock product",
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Get order by status successfully!",
+            message: "Get out of stock product successfully!",
             data: items
         }); 
     } catch (error) {
@@ -79,19 +76,36 @@ export async function getOrderByStatusHandler(req, res) {
 
 }
 
-export async function changeOrderStatusHandler(req, res) {
+export async function getOwnOrderHandler(req, res) {
     try {
-        const items = await changeOrderStatus(req.body.id, req.body.status_id);
+        const token = getJwt(req)
+        if(token == null) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                status: Status.FAILED,
+                message: "Not verified!",
+            });
+            return
+        }
+        const payload = decodeJwt(token)
+        if(payload == null) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                status: Status.FAILED,
+                message: "Not verified!",
+            });
+            return
+        }
+        const {page, limit} = req.query
+        const items = await getOwnOrder(payload.id, page, limit);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
-                message: "Failed to change order status",
+                message: "Failed to get order",
             });
             return
         }
         res.status(StatusCode.OK).json({
             status: Status.OK,
-            message: "Change order status successfully!",
+            message: "Get order successfully!",
             data: items
         }); 
     } catch (error) {

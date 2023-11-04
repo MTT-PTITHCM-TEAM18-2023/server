@@ -12,7 +12,7 @@ const get = async (_page, _limit) => {
             'SELECT * FROM product where is_active = true'
         )
         const result = await database.query(
-            'SELECT * FROM product where is_active = true ORDER BY id OFFSET $1 LIMIT $2',
+            'SELECT * FROM product where is_active = true ORDER BY id desc OFFSET $1 LIMIT $2',
             [offset, limit]
         );
 

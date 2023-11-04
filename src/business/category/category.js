@@ -13,7 +13,7 @@ export async function getCategory(_page, _limit){
             throw Error("Not found category")
         }
         const result = await database.query(
-            'SELECT * FROM category ORDER BY id OFFSET $1 LIMIT $2',
+            'SELECT * FROM category ORDER BY id desc OFFSET $1 LIMIT $2',
             [offset, limit]
         );
         if(result.rowCount == 0) {

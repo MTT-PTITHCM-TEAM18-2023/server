@@ -39,8 +39,8 @@ export async function placeOrder(customer, email, items) {
         let customer_id = 0
         if(c_res.rowCount == 0) {
             const query = `
-                INSERT INTO customer (email, name, phone, address, is_loyal)
-                VALUES ($1, $2, $3, $4, false)
+                INSERT INTO customer (email, name, phone, address)
+                VALUES ($1, $2, $3, $4)
                 RETURNING *;
             `;
             const result = await database.query(query,

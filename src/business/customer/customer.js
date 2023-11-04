@@ -13,7 +13,7 @@ export async function getCustomer(_page, _limit){
             throw Error("Not found customer")
         }
         const result = await database.query(
-            'SELECT * FROM customer ORDER BY id OFFSET $1 LIMIT $2',
+            'SELECT * FROM customer ORDER BY id desc OFFSET $1 LIMIT $2',
             [offset, limit]
         );
         if(result.rowCount == 0) {
@@ -46,7 +46,7 @@ export async function getLoyalCustomer(_page, _limit){
             throw Error("Not found loyal customer")
         }
         const result = await database.query(
-            'SELECT * FROM customer where is_loyal = true ORDER BY id OFFSET $1 LIMIT $2',
+            'SELECT * FROM customer where is_loyal = true ORDER BY id desc OFFSET $1 LIMIT $2',
             [offset, limit]
         );
         if(result.rowCount == 0) {
