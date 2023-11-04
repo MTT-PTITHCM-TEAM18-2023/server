@@ -4,27 +4,62 @@ import { database } from "../../database/postgresql.js";
 
 export async function getGeneralStatistic(){
     try {
-        // const mType = await getMapOrderType()
-        // const mStatus = await getMapOrderStatus()
-        // const mUser = await getMapUser()
-        // const mCustomer = await getMapCustomer()
-        const all = await database.query(
-            `SELECT o.order_status_id, ot.name, CAST(COUNT(*) AS INTEGER) AS total
-                FROM public.order o
-                JOIN
-                order_status ot ON o.order_status_id = ot.id
-                WHERE EXTRACT(DAY FROM update_time) = EXTRACT(DAY FROM CURRENT_TIMESTAMP)
-                    AND EXTRACT(MONTH FROM update_time) = EXTRACT(MONTH FROM CURRENT_TIMESTAMP)
-                    AND EXTRACT(YEAR FROM update_time) = EXTRACT(YEAR FROM CURRENT_TIMESTAMP)
-                GROUP BY
-                    ot.name, o.order_status_id
-                ORDER By o.order_status_id
+
+        const product = await database.query(
+            `
+            select count(distinct product_id) as num
+            from order_item as oi
+            join public.order as o ON oi.order_id = o.id
+            where o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+                AND o.order_date <= CURRENT_DATE;
             `
         )
-        if(all.rowCount == 0) {
-            throw Error("Not found order")
+        const total = await database.query(
+            `
+            select sum(total) as num
+            from public.order as o
+            where o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+                AND o.order_date <= CURRENT_DATE;
+            `
+        )
+        const canceled = await database.query(
+            `
+            select count(id) as num
+            from public.order as o
+            where (o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+                AND o.order_date <= CURRENT_DATE) AND (o.order_status_id = 5);
+            `
+        )
+        const deliveried = await database.query(
+            `
+            select count(id) as num
+            from public.order as o
+            where (o.order_date >= CURRENT_DATE - INTERVAL '30 days'
+                AND o.order_date <= CURRENT_DATE) AND (o.order_status_id = 4);
+            `
+        )
+        let product_res = 0
+        if  (product.rowCount != 0) {
+            product_res = product.rows[0].num
         }
-        return all.rows
+        let total_res = 0
+        if  (total.rowCount != 0) {
+            total_res = total.rows[0].num
+        }
+        let canceled_res = 0
+        if  (canceled.rowCount != 0) {
+            canceled_res = canceled.rows[0].num
+        }
+        let deliveried_res = 0
+        if  (deliveried.rowCount != 0) {
+            deliveried_res = deliveried.rows[0].num
+        }
+        return {
+            product: product_res,
+            total: total_res,
+            canceled: canceled_res,
+            deliveried: deliveried_res
+        }
     } catch (error) {
         throw error
     }
