@@ -1,18 +1,19 @@
-import { createSupplierHandler, getSupplierByIdHandler, getSupplierHandler, updateSupplierHandler } from "../handler/supplier.js";
-import { verifyToken } from "../middlewares/verifytoken.js";
+import SupplierHandler from "../handler/supplier.js";
+import Middleware from "../middlewares/middleware.js";
+import PATH from "../route/router.js";
 
 export async function supplierRouter(app) {
 
-    app.get("/supplier", (req, res) => {
-        getSupplierHandler(req, res);
+    app.get(`${PATH.SUPPLIER}`, (req, res) => {
+        SupplierHandler.get(req, res);
     });
-    app.get("/supplier/:id", (req, res) => {
-        getSupplierByIdHandler(req, res);
+    app.get(`${PATH.SUPPLIER}/:id`, (req, res) => {
+        SupplierHandler.getById(req, res);
     });
-    app.post("/supplier", verifyToken, (req, res) => {
-        createSupplierHandler(req, res);
+    app.post(`${PATH.SUPPLIER}`, Middleware.verifyToken, (req, res) => {
+        SupplierHandler.create(req, res);
     });
-    app.put("/supplier", verifyToken, (req, res) => {
-        updateSupplierHandler(req, res);
+    app.put(`${PATH.SUPPLIER}`, Middleware.verifyToken, (req, res) => {
+        SupplierHandler.update(req, res);
     });
 }

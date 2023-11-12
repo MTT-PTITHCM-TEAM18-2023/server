@@ -1,5 +1,4 @@
 import {Status, StatusCode} from "../common/common.js";
-
 import ProductBusiness from "../business/product/product.js";
 import { MSG } from "../common/message.js";
 
@@ -58,6 +57,26 @@ const get = async (req, res) => {
 }
 
 const getById = async (req, res) => {
+    const {id} = req.params
+    const product = await ProductBusiness.getById(id)
+
+    if (product) {
+        res.status(StatusCode.OK).json({
+            status: Status.OK,
+            message: MSG.GET_PRODUCT_BY_ID_SUCCESS,
+            data: product
+        })
+    }
+    else {
+        res.status(StatusCode.NOT_FOUND).json({
+            status: Status.NOT_FOUND,
+            message: MSG.GET_PRODUCT_BY_ID_FAILED
+        })
+    }
+}
+
+
+const getBySupplier = async (req, res) => {
     const {id} = req.params
     const product = await ProductBusiness.getById(id)
 
@@ -162,13 +181,14 @@ const findByName = async (req, res) => {
         })
     }
 }
-const ProductHandlers = {
+const ProductHandler = {
     get,
     getById,
     create,
     update,
     deleteById,
     // getByCat
-    findByName
+    findByName,
+    getBySupplier
 }
-export default ProductHandlers
+export default ProductHandler

@@ -1,4 +1,4 @@
-import { sendEmail } from "../../common/email.js";
+import CommonMethod from "../../common/method.js";
 import { database } from "../../database/postgresql.js";
 
 
@@ -95,7 +95,7 @@ async function getMapProduct() {
 }
 
 
-export async function getOrderDetail(id){
+async function getDetail(id){
     try {
         const mType = await getMapOrderType()
         const mStatus = await getMapOrderStatus()
@@ -138,7 +138,7 @@ export async function getOrderDetail(id){
 }
 
 
-export async function getPendingOrder(_page, _limit){
+async function getPending(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -190,7 +190,7 @@ export async function getPendingOrder(_page, _limit){
     }
 }
 
-export async function getOrderByStatus(id, _page, _limit){
+async function getByStatus(id, _page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -242,8 +242,7 @@ export async function getOrderByStatus(id, _page, _limit){
         throw error
     }
 }
-
-export async function changeOrderStatus(id, status_id){
+async function changeStatus(id, status_id){
     try {
         const mStatus = await getMapOrderStatus()
         const result = await database.query(
@@ -296,7 +295,7 @@ export async function changeOrderStatus(id, status_id){
             const mCustomer = await getMapCustomer()
             const status = mStatus.get(up_result.rows[0].order_status_id)
             const customer = mCustomer.get(up_result.rows[0].customer_id) || {email: "nore@example.com", name: "bạn"}
-            sendEmail(customer.email,"Cập nhật trạng thái đơn hàng",`Xin chào ${customer.name}, đơn hàng của bạn đã được cập nhật sang trạng thái: ${status}`)
+            await CommonMethod.sendEmail(customer.email,"Cập nhật trạng thái đơn hàng",`Xin chào ${customer.name}, đơn hàng của bạn đã được cập nhật sang trạng thái: ${status}`)
         }
         return true
     } catch (error) {
@@ -305,7 +304,7 @@ export async function changeOrderStatus(id, status_id){
 }
 
 
-export async function getOrderStatus(_page, _limit){
+async function getStatus(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -338,3 +337,15 @@ export async function getOrderStatus(_page, _limit){
         throw error
     }
 }
+
+
+
+const OrderBusiness = {
+    getDetail,
+    getPending,
+    getStatus,
+    changeStatus,
+    getByStatus,
+}
+
+export default OrderBusiness

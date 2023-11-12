@@ -1,12 +1,11 @@
 import {Status, StatusCode} from "../common/common.js";
-import { createCustomer, getCustomer, getCustomerById, updateCustomer } from "../business/customer/customer.js"
-import { getLoyalCustomer } from "../business/customer/customer.js";
+import CustomerBusiness from "../business/customer/customer.js"
 import { MSG } from "../common/message.js";
 
-export async function getCustomerHandler(req, res) {
+async function get(req, res) {
     try {
         const {page, limit} = req.query
-        const items = await getCustomer(page, limit)
+        const items = await CustomerBusiness.get(page, limit)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -28,10 +27,10 @@ export async function getCustomerHandler(req, res) {
     
 }
 
-export async function getCustomerByIdHandler(req, res) {
+async function getById(req, res) {
     try {
         const {id} = req.params
-        const items = await getCustomerById(id)
+        const items = await CustomerBusiness.getById(id)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -53,10 +52,10 @@ export async function getCustomerByIdHandler(req, res) {
     
 }
 
-export async function getLoyalCustomerHandler(req, res) {
+async function getLoyal(req, res) {
     try {
         const {page, limit} = req.query
-        const items = await getLoyalCustomer(page, limit)
+        const items = await CustomerBusiness.getLoyal(page, limit)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -78,9 +77,9 @@ export async function getLoyalCustomerHandler(req, res) {
     
 }
 
-export async function createCustomerHandler(req, res) {
+async function create(req, res) {
     try {
-        const items = await createCustomer(req.body)
+        const items = await CustomerBusiness.create(req.body)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -102,7 +101,7 @@ export async function createCustomerHandler(req, res) {
     
 }
 
-export async function updateCustomerHandler(req, res) {
+async function update(req, res) {
 
     if (req.body.id == "" || req.body.name == "" || req.body.phone == "" || req.body.email == ""|| req.body.address == ""){
         res.status(StatusCode.INTERNAL_SERVER).json({
@@ -111,7 +110,7 @@ export async function updateCustomerHandler(req, res) {
         });
     } 
     try {
-        const items = await updateCustomer(req.body)
+        const items = await CustomerBusiness.update(req.body)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -131,3 +130,13 @@ export async function updateCustomerHandler(req, res) {
         });
     }
 }
+
+const CustomerHandler = {
+    get,
+    getById,
+    getLoyal,
+    create,
+    update,
+}
+
+export default CustomerHandler

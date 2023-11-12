@@ -1,7 +1,7 @@
 import { database } from "../../database/postgresql.js";
 
 
-export async function getCustomer(_page, _limit){
+async function get(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -34,7 +34,7 @@ export async function getCustomer(_page, _limit){
     }
 }
 
-export async function getLoyalCustomer(_page, _limit){
+async function getLoyal(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -67,7 +67,7 @@ export async function getLoyalCustomer(_page, _limit){
     }
 }
 
-export async function getCustomerById(id){
+async function getById(id){
     try {
         const result = await database.query(
             'SELECT * FROM customer where id = $1',
@@ -82,7 +82,7 @@ export async function getCustomerById(id){
     }
 }
 
-export async function createCustomer(customer){
+async function create(customer){
     try {
         const result = await database.query(
             `
@@ -101,7 +101,7 @@ export async function createCustomer(customer){
     }
 }
 
-export async function updateCustomer(customer){
+async function update(customer){
 
     try {
         const result = await database.query(
@@ -124,3 +124,13 @@ export async function updateCustomer(customer){
         throw error
     }
 }
+
+const CustomerBusiness = {
+    get,
+    getById,
+    getLoyal,
+    create,
+    update,
+}
+
+export default CustomerBusiness

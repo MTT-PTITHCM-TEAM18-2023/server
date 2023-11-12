@@ -1,16 +1,17 @@
-import ProductHandlers from "../handler/product.js";
-import {verifyToken} from "../middlewares/verifytoken.js";
+import ProductHandler from "../handler/product.js";
+import Middleware from "../middlewares/middleware.js";
+import PATH from "../route/router.js";
 
-const PRODUCT_URL = "/products"
+
 export async function productRouter(app) {
 
-    app.get(`${PRODUCT_URL}`, ProductHandlers.get)
+    app.get(`${PATH.PRODUCT}`, ProductHandler.get)
 
-    app.get(`${PRODUCT_URL}/:id`, ProductHandlers.getById)
+    app.get(`${PATH.PRODUCT}/:id`, ProductHandler.getById)
 
-    app.post(PRODUCT_URL, verifyToken, ProductHandlers.create)
+    app.post(PATH.PRODUCT, Middleware.verifyToken, ProductHandler.create)
 
-    app.put(`${PRODUCT_URL}/:id`, verifyToken, ProductHandlers.update)
+    app.put(`${PATH.PRODUCT}/:id`, Middleware.verifyToken, ProductHandler.update)
 
-    app.delete(`${PRODUCT_URL}/:id`, verifyToken, ProductHandlers.deleteById)
+    app.delete(`${PATH.PRODUCT}/:id`, Middleware.verifyToken, ProductHandler.deleteById)
 }

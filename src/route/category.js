@@ -1,18 +1,18 @@
-import { createCategoryHandler, getCategoryByIdHandler, getCategoryHandler, updateCategoryHandler } from "../handler/category.js";
-import { verifyToken } from "../middlewares/verifytoken.js";
-
+import CategoryHandler from "../handler/category.js";
+import PATH from "../route/router.js";
+import Middleware from "../middlewares/middleware.js";
 export async function categoryRouter(app) {
 
-    app.get("/category", (req, res) => {
-        getCategoryHandler(req, res);
+    app.get(`${PATH.CATEGORY}`, (req, res) => {
+        CategoryHandler.get(req, res);
     });
-    app.get("/category/:id", (req, res) => {
-        getCategoryByIdHandler(req, res);
+    app.get(`${PATH.CATEGORY}/:id`, (req, res) => {
+        CategoryHandler.getById(req, res);
     });
-    app.post("/category", verifyToken, (req, res) => {
-        createCategoryHandler(req, res);
+    app.post(`${PATH.CATEGORY}`, Middleware.verifyToken, (req, res) => {
+        CategoryHandler.create(req, res);
     });
-    app.put("/category", verifyToken, (req, res) => {
-        updateCategoryHandler(req, res);
+    app.put(`${PATH.CATEGORY}`, Middleware.verifyToken, (req, res) => {
+        CategoryHandler.update(req, res);
     });
 }

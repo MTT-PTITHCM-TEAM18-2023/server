@@ -1,8 +1,7 @@
-import { sendEmail } from "../../common/email.js";
 import { database } from "../../database/postgresql.js";
 
 
-export async function getGeneralStatistic(){
+async function getGeneral(){
     try {
 
         const product = await database.query(
@@ -64,8 +63,7 @@ export async function getGeneralStatistic(){
         throw error
     }
 }
-
-export async function getTopProduct(_top){
+async function getTopProduct(_top){
     const top = parseInt(_top) || 10;
     try {
         // const mType = await getMapOrderType()
@@ -104,63 +102,10 @@ export async function getTopProduct(_top){
     }
 }
 
-export async function changeOrderStatus(id, status_id){
-    try {
-        let updateQuery = `
-                UPDATE public.order
-                SET order_status_id = $2,
-                    update_date = current_date
-                WHERE id = $1
-                RETURNING *;
-            `;
-        const up_result = await database.query(updateQuery,
-            [id, status_id]
-        );
-        if(up_result.rows[0].order_type_id == 1 && up_result.rows[0].customer_id != 1) {
-            const mStatus = await getMapOrderStatus()
-            
-            const mCustomer = await getMapCustomer()
-            const status = mStatus.get(up_result.rows[0].order_status_id)
-            const customer = mCustomer.get(up_result.rows[0].customer_id) || {email: "nore@example.com", name: "bạn"}
-            sendEmail(customer.email,"Cập nhật trạng thái đơn hàng",`Xin chào ${customer.name}, đơn hàng của bạn đã được cập nhật sang trạng thái: ${status}`)
-        }
-        return true
-    } catch (error) {
-        throw error
-    }
-}
 
 
-export async function getOrderStatus(_page, _limit){
-    const page = parseInt(_page) || 1;
-    const limit = parseInt(_limit) || 10;
-    const offset = (page - 1) * limit;
-    try {
-     
-        const all = await database.query(
-            'SELECT * FROM public.order_status'
-        )
-        if(all.rowCount == 0) {
-            throw Error("Not found order")
-        }
-        const result = await database.query(
-            'SELECT * FROM public.order_status ORDER BY id OFFSET $1 LIMIT $2',
-            [offset, limit]
-        );
-        if(result.rowCount == 0) {
-            throw Error("Not found order")
-        }
-        return {
-            items: result.rows,
-            meta: {
-                "itemCount": result.rowCount,
-                "totalItems": all.rowCount,
-                "itemsPerPage": limit,
-                "totalPages": parseInt(all.rowCount/limit) + 1,
-                "currentPage": page
-            },
-      } 
-    } catch (error) {
-        throw error
-    }
+const StatisticBusiness = {
+    getGeneral,
+    getTopProduct,
 }
+export default StatisticBusiness

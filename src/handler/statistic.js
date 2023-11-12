@@ -1,10 +1,10 @@
 import {Status, StatusCode} from "../common/common.js";
-import { getGeneralStatistic, getTopProduct } from "../business/statistic/statistic.js";
+import StatisticBusiness from "../business/statistic/statistic.js";
 
 
-export async function getGeneralStatisticHandler(req, res) {
+async function getGeneral(req, res) {
     try {
-        const items = await getGeneralStatistic();
+        const items = await StatisticBusiness.getGeneral();
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -25,11 +25,10 @@ export async function getGeneralStatisticHandler(req, res) {
     }
 
 }
-
-export async function getTopProductHandler(req, res) {
+async function getTopProduct(req, res) {
     try {
         // const {top} = req.query.top
-        const items = await getTopProduct(10);
+        const items = await StatisticBusiness.getTopProduct(10);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -50,8 +49,7 @@ export async function getTopProductHandler(req, res) {
     }
 
 }
-
-export async function getOutOfStockHandler(req, res) {
+async function getOutOfStock(req, res) {
     try {
         const {page, limit} = req.query
         const items = await getOutOfStock(page, limit);
@@ -76,7 +74,7 @@ export async function getOutOfStockHandler(req, res) {
 
 }
 
-export async function getOwnOrderHandler(req, res) {
+async function getOwnOrder(req, res) {
     try {
         const token = getJwt(req)
         if(token == null) {
@@ -116,3 +114,9 @@ export async function getOwnOrderHandler(req, res) {
     }
 
 }
+
+const StatisticHandler = {
+    getGeneral,
+    getTopProduct,
+}
+export default StatisticHandler

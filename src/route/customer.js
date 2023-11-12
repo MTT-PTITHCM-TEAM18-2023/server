@@ -1,21 +1,21 @@
-import { createCustomerHandler, getCustomerByIdHandler, getCustomerHandler, updateCustomerHandler } from "../handler/customer.js";
-import { verifyToken } from "../middlewares/verifytoken.js";
-
+import CustomerHandler from "../handler/customer.js";
+import Middleware from "../middlewares/middleware.js";
+import PATH from "../route/router.js";
 export async function customerRouter(app) {
 
-    app.get("/customer",(req, res) => {
-        getCustomerHandler(req, res);
+    app.get(`${PATH.CUSTOMER}`,(req, res) => {
+        CustomerHandler.get(req, res);
     });
-    app.get("/customer/:id",(req, res) => {
-        getCustomerByIdHandler(req, res);
+    app.get(`${PATH.CUSTOMER}/:id`,(req, res) => {
+        CustomerHandler.getById(req, res);
     });
-    app.post("/customer", verifyToken,(req, res) => {
-        createCustomerHandler(req, res);
+    app.post(`${PATH.CUSTOMER}`, Middleware.verifyToken,(req, res) => {
+        CustomerHandler.create(req, res);
     });
-    app.put("/customer", verifyToken,(req, res) => {
-        updateCustomerHandler(req, res);
+    app.put(`${PATH.CUSTOMER}`, Middleware.verifyToken,(req, res) => {
+        CustomerHandler.update(req, res);
     });
-    app.get("/customer/loyal", verifyToken,(req, res) => {
-        getCustomerByIdHandler(req, res);
+    app.get(`${PATH.CUSTOMER}/loyal`, Middleware.verifyToken,(req, res) => {
+        CustomerHandler.getLoyal(req, res);
     });
 }

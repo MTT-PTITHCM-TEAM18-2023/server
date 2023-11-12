@@ -1,5 +1,4 @@
-import { sendEmail } from "../../common/email.js";
-import { generateRandomString } from "../../common/strings.js";
+import CommonMethod from "../../common/method.js";
 import { database } from "../../database/postgresql.js";
 
 
@@ -28,7 +27,7 @@ async function deleteOrderItem(order_id) {
     }
 }
 
-export async function placeOrder(customer, email, items) {
+async function placeOrder(customer, email, items) {
     try {
         let query = `
             SELECT * FROM customer WHERE email = $1
@@ -121,7 +120,7 @@ export async function placeOrder(customer, email, items) {
             Vui lòng theo dõi email để cập nhật thông tin đơn hàng!
             Cám ơn bạn đã lựa chọn chúng tôi!
         `
-        await sendEmail(email, "Đặt hàng thành công", msg);
+        await CommonMethod.sendEmail(email, "Đặt hàng thành công", msg);
         return {
             "id": order_id,
             "total": total
@@ -131,7 +130,7 @@ export async function placeOrder(customer, email, items) {
     }
 }
 
-export async function orderInStore(customer, items, user_id) {
+async function orderInStore(customer, items, user_id) {
     try {
         let customer_id = 1
         if (customer != -1) {
@@ -227,3 +226,9 @@ export async function orderInStore(customer, items, user_id) {
         throw error
     }
 }
+
+const CheckoutBusiness = {
+    orderInStore,
+    placeOrder,
+}
+export default CheckoutBusiness

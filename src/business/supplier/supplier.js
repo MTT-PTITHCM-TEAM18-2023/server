@@ -1,7 +1,7 @@
 import { database } from "../../database/postgresql.js";
 
 
-export async function getSupplier(_page, _limit){
+async function get(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -34,7 +34,7 @@ export async function getSupplier(_page, _limit){
     }
 }
 
-export async function getSupplierById(id){
+async function getById(id){
     try {
         const result = await database.query(
             'SELECT * FROM supplier where id = $1',
@@ -49,7 +49,7 @@ export async function getSupplierById(id){
     }
 }
 
-export async function createSupplier(supplier){
+async function create(supplier){
     try {
         const result = await database.query(
             `
@@ -68,7 +68,7 @@ export async function createSupplier(supplier){
     }
 }
 
-export async function updateSupplier(supplier){
+async function update(supplier){
 
     try {
         const result = await database.query(
@@ -91,3 +91,13 @@ export async function updateSupplier(supplier){
         throw error
     }
 }
+
+
+const SupplierBusiness = {
+    get,
+    getById,
+    create,
+    update,
+}
+
+export default SupplierBusiness

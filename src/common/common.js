@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 export const Status = {
     OK: "OK",
     CREATED: "CREATED",
@@ -21,8 +20,4 @@ export const StatusCode = {
     INTERNAL_SERVER: 500
 }
 
-export function hashPassword(password) {
-    const hash = crypto.createHash('md5').update(password).digest('hex');
-    return hash;
-}
 

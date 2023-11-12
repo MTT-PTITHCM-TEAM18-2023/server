@@ -1,31 +1,31 @@
-import UserHandlers from "../handler/user.js";
-import {sendOTPHandler, verifyOTPHandler} from "../handler/common.js";
-import {verifyToken} from "../middlewares/verifytoken.js";
-import adminCheck from "../middlewares/admincheck.js";
+import UserHandler from "../handler/user.js";
+import CommonHandler from "../handler/common.js";
+import Middleware from "../middlewares/middleware.js";
+import PATH from "../route/router.js";
 
 const USER_URL = "/user"
 
 export async function userRouter(app) {
 
-    app.post(`${USER_URL}/login`, UserHandlers.login)
+    app.post(`${PATH.USER}/login`, UserHandler.login)
 
-    app.post(`${USER_URL}/logout`, verifyToken, UserHandlers.logout)
+    app.post(`${PATH.USER}/logout`, Middleware.verifyToken, UserHandler.logout)
 
-    app.post(`${USER_URL}/get-profile`, verifyToken, UserHandlers.getProfile)
+    app.post(`${PATH.USER}/get-profile`, Middleware.verifyToken, UserHandler.getProfile)
 
-    app.post(`${USER_URL}/change-password`, verifyToken, UserHandlers.changePassword)
+    app.post(`${PATH.USER}/change-password`, Middleware.verifyToken, UserHandler.changePassword)
 
-    app.post(`${USER_URL}/forgot-password/send-otp`, sendOTPHandler)
-    app.post(`${USER_URL}/forgot-password/verify`, verifyOTPHandler)
-    app.post(`${USER_URL}/forgot-password/get`, verifyToken, UserHandlers.sendPassword)
+    app.post(`${PATH.USER}/forgot-password/send-otp`, CommonHandler.sendOTP)
+    app.post(`${PATH.USER}/forgot-password/verify`, CommonHandler.verifyOTP)
+    app.post(`${PATH.USER}/forgot-password/get`, Middleware.verifyToken, UserHandler.sendPassword)
 
-    app.get(USER_URL, verifyToken, adminCheck, UserHandlers.get)
+    app.get(`${PATH.USER}`, Middleware.verifyToken, Middleware.adminCheck, UserHandler.get)
 
-    app.get(`${USER_URL}/:id`, verifyToken, adminCheck, UserHandlers.getById)
+    app.get(`${PATH.USER}/:id`, Middleware.verifyToken, Middleware.adminCheck, UserHandler.getById)
 
-    app.post(USER_URL, verifyToken, adminCheck, UserHandlers.create)
+    app.post(`${PATH.USER}`, Middleware.verifyToken, Middleware.adminCheck, UserHandler.create)
 
-    app.put(`${USER_URL}`, verifyToken, adminCheck, UserHandlers.update)
+    app.put(`${PATH.USER}`, Middleware.verifyToken, Middleware.adminCheck, UserHandler.update)
 
-    app.delete(`${USER_URL}/:id`, verifyToken, adminCheck, UserHandlers.deleteById)
+    app.delete(`${PATH.USER}/:id`, Middleware.verifyToken, Middleware.adminCheck, UserHandler.deleteById)
 }

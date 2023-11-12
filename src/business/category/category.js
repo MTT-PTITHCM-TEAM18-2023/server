@@ -1,7 +1,7 @@
 import { database } from "../../database/postgresql.js";
 
 
-export async function getCategory(_page, _limit){
+async function get(_page, _limit){
     const page = parseInt(_page) || 1;
     const limit = parseInt(_limit) || 10;
     const offset = (page - 1) * limit;
@@ -34,7 +34,7 @@ export async function getCategory(_page, _limit){
     }
 }
 
-export async function getCategoryById(id){
+async function getById(id){
     try {
         const result = await database.query(
             'SELECT * FROM category where id = $1',
@@ -49,7 +49,7 @@ export async function getCategoryById(id){
     }
 }
 
-export async function createCategory(category){
+async function create(category){
     try {
         const result = await database.query(
             `
@@ -68,7 +68,7 @@ export async function createCategory(category){
     }
 }
 
-export async function updateCategory(category){
+async function update(category){
 
     try {
         const result = await database.query(
@@ -88,3 +88,12 @@ export async function updateCategory(category){
         throw error
     }
 }
+
+const CategoryBusiness = {
+    get,
+    getById,
+    create,
+    update,
+}
+
+export default CategoryBusiness

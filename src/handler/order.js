@@ -1,13 +1,13 @@
 import {Status, StatusCode} from "../common/common.js";
-import { changeOrderStatus, getOrderByStatus, getOrderStatus, getPendingOrder, getOrderDetail } from "../business/order/order.js";
+import OrderBusiness from "../business/order/order.js";
 import { MSG } from "../common/message.js";
 
 
 
-export async function getOrderDetailHandler(req, res) {
+async function getDetail(req, res) {
     try {
         const {id} = req.params
-        const items = await getOrderDetail(id);
+        const items = await OrderBusiness.getDetail(id);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -29,10 +29,10 @@ export async function getOrderDetailHandler(req, res) {
 
 }
 
-export async function getPendingOrderHandler(req, res) {
+async function getPending(req, res) {
     try {
         const {page, limit} = req.query
-        const items = await getPendingOrder(page, limit);
+        const items = await OrderBusiness.getPending(page, limit);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -54,10 +54,10 @@ export async function getPendingOrderHandler(req, res) {
 
 }
 
-export async function getOrderStatusHandler(req, res) {
+async function getStatus(req, res) {
     try {
         const {page, limit} = req.query
-        const items = await getOrderStatus(page, limit);
+        const items = await OrderBusiness.getStatus(page, limit);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -80,11 +80,11 @@ export async function getOrderStatusHandler(req, res) {
 }
 
 
-export async function getOrderByStatusHandler(req, res) {
+async function getByStatus(req, res) {
     try {
         const {id} = req.params
         const {page, limit} = req.query
-        const items = await getOrderByStatus(id, page, limit);
+        const items = await OrderBusiness.getByStatus(id, page, limit);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -106,9 +106,9 @@ export async function getOrderByStatusHandler(req, res) {
 
 }
 
-export async function changeOrderStatusHandler(req, res) {
+async function changeStatus(req, res) {
     try {
-        const items = await changeOrderStatus(req.body.id, req.body.status_id);
+        const items = await OrderBusiness.changeStatus(req.body.id, req.body.status_id);
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -129,3 +129,13 @@ export async function changeOrderStatusHandler(req, res) {
     }
 
 }
+
+const OrderHandler = {
+    getDetail,
+    getPending,
+    getStatus,
+    changeStatus,
+    getByStatus,
+}
+
+export default OrderHandler

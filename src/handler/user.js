@@ -1,12 +1,11 @@
 import {Status, StatusCode} from "../common/common.js";
-import { decodeJwt, generateToken, getJwt, revokeToken } from "../middlewares/verifytoken.js";
+import Middleware from "../middlewares/middleware.js";
 import UserBusiness from "../business/user/user.js";
-import {sendEmail} from "../common/email.js";
-import { generateRandomString } from "../common/strings.js";
+import CommonMethod from "../common/method.js";
 import { MSG } from "../common/message.js";
 
 const logout = async (req, res) => {
-    const token = getJwt(req)
+    const token = Middleware.getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -14,7 +13,7 @@ const logout = async (req, res) => {
         });
         return
     }
-    const rv = await revokeToken(token)
+    const rv = await Middleware.revokeToken(token)
     if(rv == null) {
         console.log("INTERNAL_SERVER_ERROR: ", "Failed to logout session!")
         res.status(StatusCode.INTERNAL_SERVER).json({
@@ -46,7 +45,7 @@ const login = async (req, res) => {
         });
         return
     }
-    const token = await generateToken({ email: req.body.email.toLowerCase(), roleId: item.roleId , id: item.id})
+    const token = await Middleware.generateToken({ email: req.body.email.toLowerCase(), roleId: item.roleId , id: item.id})
     res.status(StatusCode.OK).json({
         status: Status.OK,
         message: MSG.LOG_IN_SUCCESS,
@@ -58,7 +57,7 @@ const login = async (req, res) => {
 }
 
 const getProfile = async (req, res) => {
-    const token = getJwt(req)
+    const token = Middleware.getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -66,7 +65,7 @@ const getProfile = async (req, res) => {
         });
         return
     }
-    const payload = decodeJwt(token)
+    const payload = Middleware.decodeJwt(token)
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -97,7 +96,7 @@ const getProfile = async (req, res) => {
 }
 
 const changePassword = async (req, res) => {
-    const token = getJwt(req)
+    const token = Middleware.getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -105,7 +104,7 @@ const changePassword = async (req, res) => {
         });
         return
     }
-    const payload = decodeJwt(token)
+    const payload = Middleware.decodeJwt(token)
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -130,7 +129,7 @@ const changePassword = async (req, res) => {
 }
 
 const sendPassword = async (req, res) => {
-    const token = getJwt(req)
+    const token = Middleware.getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -138,7 +137,7 @@ const sendPassword = async (req, res) => {
         });
         return
     }
-    const payload = decodeJwt(token)
+    const payload = Middleware.decodeJwt(token)
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -146,7 +145,7 @@ const sendPassword = async (req, res) => {
         });
         return
     }
-    const newPass = generateRandomString(10)
+    const newPass = CommonMethod.generateRandomString(10)
     const email = payload.email
     const item = await UserBusiness.changePassword(email, newPass)
     if (item == null) {
@@ -156,7 +155,7 @@ const sendPassword = async (req, res) => {
         });
         return
     }
-    const rv = await revokeToken(token)
+    const rv = await Middleware.revokeToken(token)
     if(rv == null) {
         res.send({
             status: Status.ERROR,
@@ -165,7 +164,7 @@ const sendPassword = async (req, res) => {
         return
     }
     const content = `Mật khẩu của bạn đã được thay đổi. Mật khẩu mới là ${newPass}. `
-    await sendEmail(email, "Mật khẩu mới", content)
+    await CommonMethod.sendEmail(email, "Mật khẩu mới", content)
     res.status(StatusCode.CREATED).json({
         status: Status.CREATED,
         message: MSG.SEND_PASS_EMAIL

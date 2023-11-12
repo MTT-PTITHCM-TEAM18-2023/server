@@ -1,11 +1,11 @@
 import {Status, StatusCode} from "../common/common.js";
-import { createCategory, getCategory, getCategoryById, updateCategory } from "../business/category/category.js"
+import  CategoryBusiness  from "../business/category/category.js"
 import { MSG } from "../common/message.js";
 
-export async function getCategoryHandler(req, res) {
+async function get(req, res) {
     try {
         const {page, limit} = req.query
-        const items = await getCategory(page, limit)
+        const items = await CategoryBusiness.get(page, limit)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -27,10 +27,10 @@ export async function getCategoryHandler(req, res) {
     
 }
 
-export async function getCategoryByIdHandler(req, res) {
+async function getById(req, res) {
     try {
         const {id} = req.params
-        const items = await getCategoryById(id)
+        const items = await CategoryBusiness.getById(id)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -52,9 +52,9 @@ export async function getCategoryByIdHandler(req, res) {
     
 }
 
-export async function createCategoryHandler(req, res) {
+async function create(req, res) {
     try {
-        const items = await createCategory(req.body)
+        const items = await CategoryBusiness.create(req.body)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -76,10 +76,10 @@ export async function createCategoryHandler(req, res) {
     
 }
 
-export async function updateCategoryHandler(req, res) {
+async function update(req, res) {
 
     try {
-        const items = await updateCategory(req.body)
+        const items = await CategoryBusiness.update(req.body)
         if (items == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -101,3 +101,12 @@ export async function updateCategoryHandler(req, res) {
 
     
 }
+
+const CategoryHandler = {
+    get,
+    getById,
+    create,
+    update,
+}
+
+export default CategoryHandler

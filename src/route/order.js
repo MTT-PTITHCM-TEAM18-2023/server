@@ -1,21 +1,22 @@
-import { changeOrderStatusHandler, getOrderByStatusHandler, getOrderStatusHandler, getPendingOrderHandler, getOrderDetailHandler } from "../handler/order.js";
-import { verifyToken } from "../middlewares/verifytoken.js";
+import OrderHandler from "../handler/order.js";
+import Middleware from "../middlewares/middleware.js";
+import PATH from "../route/router.js";
 
 export async function orderRouter(app){
-    app.get("/order/detail/:id", (req, res) => {
-        getOrderDetailHandler(req, res);
+    app.get(`${PATH.ORDER}/detail/:id`, (req, res) => {
+        OrderHandler.getDetail(req, res);
     });
-    app.get("/order/pending", (req, res) => {
-        getPendingOrderHandler(req, res);
+    app.get(`${PATH.ORDER}/pending`, (req, res) => {
+        OrderHandler.getPending(req, res);
     });
-    app.post("/order/change-status", verifyToken, (req, res) => {
-        changeOrderStatusHandler(req, res);
+    app.post(`${PATH.ORDER}/change-status`, Middleware.verifyToken, (req, res) => {
+        OrderHandler.changeStatus(req, res);
     });
-    app.get("/order/status", (req, res) => {
-        getOrderStatusHandler(req, res);
+    app.get(`${PATH.ORDER}/status`, (req, res) => {
+        OrderHandler.getStatus(req, res);
     });
-    app.get("/order/by-status/:id", (req, res) => {
-        getOrderByStatusHandler(req, res);
+    app.get(`${PATH.ORDER}/by-status/:id`, (req, res) => {
+        OrderHandler.getByStatus(req, res);
     });
 
 }

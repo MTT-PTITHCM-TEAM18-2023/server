@@ -1,9 +1,38 @@
+import {Status, StatusCode} from "../common/common.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import {Status} from "../common/common.js";
 import { database } from "../database/postgresql.js";
 dotenv.config();
 
+
+const isAdmin = (roleId) => {
+    return roleId === 1
+}
+const adminCheck = async (req, res, next) => {
+    const token = getJwt(req)
+    if(token == null) {
+        res.status(StatusCode.BAD_REQUEST).json({
+            status: Status.FAILED,
+            message: "Not verified!",
+        });
+        return
+    }
+    const payload = decodeJwt(token)
+    if(payload == null) {
+        res.status(StatusCode.BAD_REQUEST).json({
+            status: Status.FAILED,
+            message: "Not verified!",
+        });
+        return
+    }
+    if (!isAdmin(payload.roleId)) {
+        return res.status(StatusCode.UN_AUTHORIZATION).json({
+            status: Status.INVALID,
+            message: "Permission denied!"
+        })
+    }
+    next()
+}
 
 async function isTokenRevoked(token) {
 
@@ -19,7 +48,7 @@ async function isTokenRevoked(token) {
 
 }
 
-export function getJwt(req) {
+function getJwt(req) {
     const authHeader = req.headers["authorization"];
     if (authHeader) {
         return authHeader.split(" ")[1];
@@ -28,7 +57,7 @@ export function getJwt(req) {
 
 }
 
-export function decodeJwt(token) {
+function decodeJwt(token) {
     try {
         return jwt.verify(token, process.env.JWT_SECRET_KEY);
     } catch (error) {
@@ -61,7 +90,7 @@ async function verifyToken(req, res, next) {
 }
 const expiresIn = '1h';
 
-export async function generateToken(payload) {
+async function generateToken(payload) {
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn})
     const query = `INSERT INTO jwt (token)VALUES ($1)`
     const j_res = await database.query(query,
@@ -70,7 +99,7 @@ export async function generateToken(payload) {
     return token
 }
 
-export async function revokeToken(token) {
+async function revokeToken(token) {
     try {
         const query = `
             DELETE
@@ -90,4 +119,16 @@ export async function revokeToken(token) {
 
 }
 
-export {verifyToken};
+
+const Middleware = {
+    adminCheck,
+    verifyToken,
+    generateToken,
+    revokeToken,
+    getJwt,
+    decodeJwt,
+}
+
+export default Middleware
+
+

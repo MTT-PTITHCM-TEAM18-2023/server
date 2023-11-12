@@ -1,19 +1,19 @@
-import { sendOTP, verifyOTP } from "../business/otp/otp.js";
-import { isValidEmail } from "../common/validate.js";
+import OTPBusiness from "../business/otp/otp.js";
+import CommonMethod from "../common/method.js";
 import {  Status } from "../common/common.js";
-import { generateToken } from "../middlewares/verifytoken.js";
+import Middleware from "../middlewares/middleware.js";
 import { MSG } from "../common/message.js";
 
 
-export async function sendOTPHandler(req, res){
-    if(!isValidEmail(req.body.email)) {
+async function sendOTP(req, res){
+    if(!CommonMethod.isValidEmail(req.body.email)) {
         res.send({
             status: Status.INVALID,
             message: MSG.INVALID_EMAIL,
         });
         return
     }
-    const item = await sendOTP(req.body.email)
+    const item = await OTPBusiness.send(req.body.email)
     if (item == null) {
         res.send({
             status: Status.FAILED,
@@ -28,8 +28,8 @@ export async function sendOTPHandler(req, res){
     });
 }
 
-export async function verifyOTPHandler(req, res){
-    if(!isValidEmail(req.body.email)) {
+async function verifyOTP(req, res){
+    if(!CommonMethod.isValidEmail(req.body.email)) {
         res.send({
             status: Status.INVALID,
             message: MSG.INVALID_EMAIL,
@@ -44,7 +44,7 @@ export async function verifyOTPHandler(req, res){
         return
     }
     try {
-        const item = await verifyOTP(req.body.code, req.body.email.toLowerCase())
+        const item = await OTPBusiness.verify(req.body.code, req.body.email.toLowerCase())
         if (item == null) {
             res.send({
                 status: Status.FAILED,
@@ -52,7 +52,7 @@ export async function verifyOTPHandler(req, res){
             });
             return
         }
-        const token = await generateToken({ email: req.body.email.toLowerCase()})
+        const token = await Middleware.generateToken({ email: req.body.email.toLowerCase()})
         res.send({
             status: Status.OK,
             message: MSG.VERIFY_OTP_SUCCESS,
@@ -67,3 +67,10 @@ export async function verifyOTPHandler(req, res){
         });
     }
 }
+
+const CommonHandler = {
+    sendOTP,
+    verifyOTP,
+}
+
+export default CommonHandler

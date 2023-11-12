@@ -10,7 +10,7 @@ import { statisticRouter } from "./statistic.js";
 export async function initRouter(app) {
     console.log("Router connected");
     app.get("/", (req, res) => {
-        res.send("hello world!");
+        res.send("Hello world!");
     });
     await userRouter(app);
     await productRouter(app);
@@ -22,4 +22,14 @@ export async function initRouter(app) {
     await statisticRouter(app);
     
 }
-
+const PATH = {
+    USER: "/user",
+    PRODUCT: "/products",
+    CHECKOUT: "/checkout",
+    CATEGORY: "/category",
+    SUPPLIER: "/supplier",
+    CUSTOMER: "/customer",
+    ORDER: "/order",
+    STATISTIC: "/statistic"
+}
+export default PATH

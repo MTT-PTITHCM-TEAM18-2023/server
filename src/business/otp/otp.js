@@ -1,11 +1,10 @@
-import { sendEmail } from "../../common/email.js";
-import { generateRandomString } from "../../common/strings.js";
+import CommonMethod from "../../common/method.js";
 import { database } from "../../database/postgresql.js";
 
-export async function sendOTP(_email) {
+async function send(_email) {
     try {
         const email = _email.toLowerCase();
-        const otp = generateRandomString(10);
+        const otp = CommonMethod.generateRandomString(10);
         let insertQuery = `
             UPDATE otp
             SET code = $1, last_update = current_time
@@ -24,14 +23,14 @@ export async function sendOTP(_email) {
         }
         const result = await database.query(insertQuery,[otp, email]);
         const msg = 'Mã xác nhận của bạn là ' + otp + '. Mã xác nhận có hiệu lực trong 30 phút!'
-        await sendEmail(email, "Mã xác nhận", msg);
+        await CommonMethod.sendEmail(email, "Mã xác nhận", msg);
         return true;
     } catch (error) {
         throw error
     }
 }
 
-export async function verifyOTP(code, email) {
+async function verify(code, email) {
     try {
         const query = `
             SELECT *
@@ -63,3 +62,10 @@ export async function verifyOTP(code, email) {
         throw error
     }
 }
+
+const OTPBusiness = {
+    send,
+    verify,
+}
+
+export default OTPBusiness

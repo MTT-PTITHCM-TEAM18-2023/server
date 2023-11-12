@@ -1,12 +1,12 @@
-import { orderInStore, placeOrder } from "../business/checkout/checkout.js";
-import { isValidEmail } from "../common/validate.js";
+import CheckoutBusiness from "../business/checkout/checkout.js";
+import CommonMethod from "../common/method.js";
 import {  Status } from "../common/common.js";
-import { decodeJwt, getJwt, revokeToken } from "../middlewares/verifytoken.js";
+import Middleware from "../middlewares/middleware.js";
 import { MSG } from "../common/message.js";
 
-export async function orderInStoreHandler(req, res){
+async function orderInStore(req, res){
     try {
-        const token = getJwt(req)
+        const token = Middleware.getJwt(req)
         if(token == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -14,7 +14,7 @@ export async function orderInStoreHandler(req, res){
             });
             return
         }
-        const payload = decodeJwt(token)
+        const payload = Middleware.decodeJwt(token)
         if(payload == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -22,7 +22,7 @@ export async function orderInStoreHandler(req, res){
             });
             return
         }
-        const item = await orderInStore(req.body.customer, req.body.items, payload.id)
+        const item = await CheckoutBusiness.orderInStore(req.body.customer, req.body.items, payload.id)
         if (item == null) {
             res.send({
                 status: Status.FAILED,
@@ -43,8 +43,8 @@ export async function orderInStoreHandler(req, res){
     }
 }
 
-export async function placeOrderHandler(req, res){
-    const token = getJwt(req)
+async function placeOrder(req, res){
+    const token = Middleware.getJwt(req)
     if(token == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
@@ -61,7 +61,7 @@ export async function placeOrderHandler(req, res){
         return
     }
     const email = payload.email.toLowerCase();
-    if(!isValidEmail(email)) {
+    if(!CommonMethod.isValidEmail(email)) {
         res.send({
             status: Status.INVALID,
             message: MSG.INVALID_EMAIL,
@@ -69,7 +69,7 @@ export async function placeOrderHandler(req, res){
         return
     }
     try {
-        const item = await placeOrder(req.body.customer, email, req.body.items)
+        const item = await CheckoutBusiness.placeOrder(req.body.customer, email, req.body.items)
         if (item == null) {
             res.send({
                 status: Status.FAILED,
@@ -77,7 +77,7 @@ export async function placeOrderHandler(req, res){
             });
             return
         }
-        const token = getJwt(req)
+        const token = Middleware.getJwt(req)
         if(token == null) {
             res.status(StatusCode.BAD_REQUEST).json({
                 status: Status.FAILED,
@@ -85,7 +85,7 @@ export async function placeOrderHandler(req, res){
             });
             return
         }
-        const rv = await revokeToken(token)
+        const rv = await Middleware.revokeToken(token)
         if(rv == null) {
             console.log("INTERNAL_SERVER_ERROR: ", "Failed to logout session!")
             res.status(StatusCode.INTERNAL_SERVER).json({
@@ -105,3 +105,10 @@ export async function placeOrderHandler(req, res){
         });
     }
 }
+
+const CheckoutHandler = {
+    orderInStore,
+    placeOrder,
+}
+
+export default CheckoutHandler
