@@ -73,7 +73,7 @@ async function update(supplier){
     try {
         const result = await database.query(
             `
-                UPDATE Supplier SET 
+                UPDATE supplier SET 
                     name = $2, 
                     phone = $3,
                     email = $4,
