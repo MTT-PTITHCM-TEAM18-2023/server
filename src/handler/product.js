@@ -1,5 +1,6 @@
 import {Status, StatusCode} from "../common/common.js";
 import ProductBusiness from "../business/product/product.js";
+import CommonMethod from "../common/method.js";
 import { MSG } from "../common/message.js";
 
 
@@ -97,7 +98,7 @@ const getBySupplier = async (req, res) => {
 
 const create = async (req, res) => {
 
-    if (req.body.name == "" || !isNumber(req.body.price) || req.body.imageUrl == "" || !isNumber(req.body.categoryId) ||  !isNumber(req.body.supplierId) || req.body.unit == "" || !isNumber(req.body.qty)){
+    if (req.body.name == "" || !CommonMethod.isNumber(req.body.price) || req.body.imageUrl == "" || !CommonMethod.isNumber(req.body.categoryId) ||  !CommonMethod.isNumber(req.body.supplierId) || req.body.unit == "" || !CommonMethod.isNumber(req.body.qty)){
         res.status(StatusCode.INTERNAL_SERVER).json({
             status: Status.ERROR,
             message: MSG.PRODUCT_INFO_INVALID,
