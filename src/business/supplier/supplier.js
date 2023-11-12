@@ -77,7 +77,7 @@ async function update(supplier){
                     name = $2, 
                     phone = $3,
                     email = $4,
-                    address = $5,
+                    address = $5
                 WHERE id = $1
                 RETURNING *;
             `,
