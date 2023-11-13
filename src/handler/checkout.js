@@ -52,7 +52,7 @@ async function placeOrder(req, res){
         });
         return
     }
-    const payload = decodeJwt(token)
+    const payload = Middleware.decodeJwt(token)
     if(payload == null) {
         res.status(StatusCode.BAD_REQUEST).json({
             status: Status.FAILED,
