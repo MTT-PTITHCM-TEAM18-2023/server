@@ -45,6 +45,11 @@ function generateRandomString(length) {
 }
 
 function isNumber(value) {
+  if (!isNaN(parseFloat(value)) && isFinite(value)) {
+        return true;
+    } else {
+      return false;
+    }
     return typeof value === 'number';
 }
 
