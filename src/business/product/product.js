@@ -96,6 +96,16 @@ const create = async ({name, description, price, imageUrl, categoryId, supplierI
 }
 
 const update = async (id, {name, description, price, imageUrl, categoryId, supplierId, unit, qty, isActive}) => {
+    console.log("id: ", id)
+    console.log("name: ", name)
+    console.log("description: ", description)
+    console.log("price: ", price)
+    console.log("imageUrl: ", imageUrl)
+    console.log("categoryId: ", categoryId)
+    console.log("supplierId: ", supplierId)
+    console.log("unit: ", unit)
+    console.log("qty: ", qty)
+    console.log("isActive: ", isActive)
     try {
         await database.query(
             'UPDATE product SET name = $1, description = $2, price = $3, image_url = $4, category_id = $5, supplier_id = $6, unit = $7, qty = $8, is_active = $9 WHERE id = $10',
