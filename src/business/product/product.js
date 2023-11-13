@@ -77,6 +77,7 @@ const getById = async (id) => {
 
         return new ProductDTO(rows[0])
     } catch (e) {
+        console.log("error: ", e)
         return null
     }
 }
@@ -102,6 +103,7 @@ const update = async (id, {name, description, price, imageUrl, categoryId, suppl
         )
         return true
     } catch (e) {
+        console.log("error: ", e)
         return false
     }
 }
@@ -113,6 +115,7 @@ const deleteById = async (id) => {
         )
         return true
     } catch (e) {
+        console.log("error: ", e)
         return false
     }
 }
